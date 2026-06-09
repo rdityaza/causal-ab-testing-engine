@@ -44,7 +44,7 @@ def calculate_significance(df, alpha=0.05):
     """
     Menghitung signifikansi statistik untuk Conversion Rate dan Revenue.
     
-    Output: Dictionary berisi p-value dan status signifikansi.
+    Output: Dictionary berisi nilai aktual, p-value, dan status signifikansi.
     """
     control = df[df['group'] == 'Control']
     treatment = df[df['group'] == 'Treatment']
@@ -54,15 +54,28 @@ def calculate_significance(df, alpha=0.05):
     nobs = [len(control), len(treatment)]
     z_stat, p_val_cr = proportions_ztest(successes, nobs)
     
+    # Hitung rate aktual
+    ctrl_rate = successes[0] / nobs[0]
+    treat_rate = successes[1] / nobs[1]
+    
     # 2. Welch's T-Test untuk Revenue
     t_stat, p_val_rev = stats.ttest_ind(control['revenue'], treatment['revenue'], equal_var=False)
     
+    # Hitung rata-rata revenue aktual
+    ctrl_rev_mean = control['revenue'].mean()
+    treat_rev_mean = treatment['revenue'].mean()
+    
+    # Masukkan SEMUA metrik ke dalam kamus balikan
     return {
         "conversion_rate": {
+            "control_rate": ctrl_rate,
+            "treatment_rate": treat_rate,
             "p_value": p_val_cr,
             "is_significant": bool(p_val_cr < alpha)
         },
         "revenue": {
+            "control_mean": ctrl_rev_mean,
+            "treatment_mean": treat_rev_mean,
             "p_value": p_val_rev,
             "is_significant": bool(p_val_rev < alpha)
         }

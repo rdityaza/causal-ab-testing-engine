@@ -299,6 +299,7 @@ st.markdown("<br>", unsafe_allow_html=True)
 section_header("STEP 02", "Standard A/B Testing · Statistical Significance")
 
 results = calculate_significance(df)
+st.write(results)
 
 conv = results['conversion_rate']
 rev  = results['revenue']
