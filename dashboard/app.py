@@ -9,7 +9,6 @@ root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if root_dir not in sys.path:
     sys.path.append(root_dir)
 
-from src.db_pipeline import fetch_from_db
 from src.ab_testing import check_srm, calculate_significance
 from src.causal_engine import run_causal_impact
 
