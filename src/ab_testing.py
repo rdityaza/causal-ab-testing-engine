@@ -37,3 +37,33 @@ if __name__ == "__main__":
     else:
         print("[STATUS] Bahaya! Terjadi Sample Ratio Mismatch.")
     
+from scipy import stats
+from statsmodels.stats.proportion import proportions_ztest
+
+def calculate_significance(df, alpha=0.05):
+    """
+    Menghitung signifikansi statistik untuk Conversion Rate dan Revenue.
+    
+    Output: Dictionary berisi p-value dan status signifikansi.
+    """
+    control = df[df['group'] == 'Control']
+    treatment = df[df['group'] == 'Treatment']
+    
+    # 1. Z-Test untuk Conversion Rate
+    successes = [control['is_converted'].sum(), treatment['is_converted'].sum()]
+    nobs = [len(control), len(treatment)]
+    z_stat, p_val_cr = proportions_ztest(successes, nobs)
+    
+    # 2. Welch's T-Test untuk Revenue
+    t_stat, p_val_rev = stats.ttest_ind(control['revenue'], treatment['revenue'], equal_var=False)
+    
+    return {
+        "conversion_rate": {
+            "p_value": p_val_cr,
+            "is_significant": bool(p_val_cr < alpha)
+        },
+        "revenue": {
+            "p_value": p_val_rev,
+            "is_significant": bool(p_val_rev < alpha)
+        }
+    }
