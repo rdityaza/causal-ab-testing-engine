@@ -244,14 +244,16 @@ def stat_card(label: str, value: str, desc: str, value_class: str = ""):
 # ── 1. FETCH DATA ─────────────────────────────────────────────────────────────
 @st.cache_data
 def load_data():
-    query = "SELECT * FROM experiment_logs ORDER BY timestamp"
-    return fetch_from_db(query)
+    # Khusus untuk cloud, kita baca langsung dari CSV agar tidak perlu hosting PostgreSQL
+    # Path disesuaikan dengan struktur repo di GitHub
+    file_path = os.path.join(root_dir, 'data', 'raw', 'ab_test_data.csv')
+    return pd.read_csv(file_path)
 
-with st.spinner("Menarik data dari PostgreSQL..."):
+with st.spinner("Menarik data..."):
     try:
         df = load_data()
     except Exception as e:
-        st.error(f"Gagal terhubung ke database. Error: {e}")
+        st.error(f"Gagal memuat data. Error: {e}")
         st.stop()
 
 
